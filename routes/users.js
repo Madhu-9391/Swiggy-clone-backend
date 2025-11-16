@@ -9,7 +9,7 @@ router.get("/", async (req, res) => {
     
     
     const users = await Order.find().sort({ createdAt: -1 });
-    console.log(users)
+    console.log(users);
     res.json({ success: true, users });
   } catch (err) {
     console.error(err);
