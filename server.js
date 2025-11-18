@@ -26,21 +26,31 @@ app.use(cookieParser());
 
 // ✅ Allow both local & deployed frontend
 const allowedOrigins = [
-  "http://localhost:3000", // local React
-  process.env.FRONTEND_URL, // your deployed frontend URL (set in Railway)
+  "http://localhost:3000",
+  process.env.FRONTEND_URL,
 ];
 
 app.use(
   cors({
-    origin: allowedOrigins,
+    origin: (origin, cb) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        cb(null, true);
+      } else {
+        cb(new Error("CORS blocked"));
+      }
+    },
     credentials: true,
   })
 );
 
+
 // ✅ Environment Variables
-const PORT = process.env.PORT || 5000;
-const MONGO_URI =
-  process.env.MONGO_URI || "mongodb://127.0.0.1:27017/Swiggy";
+const PORT = process.env.PORT || 8080;
+const MONGO_URI = process.env.MONGO_URI;
+if (!MONGO_URI) {
+  console.error("❌ Missing MONGO_URI in environment!");
+  process.exit(1);
+}
 
 // ✅ MongoDB Connection
 mongoose
